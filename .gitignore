@@ -1,0 +1,12 @@
+node_modules/
+*.log
+artifacts/
+data/
+
+dist/
+.wrangler/
+.cloudflare/
+.dev.vars*
+.env*
+assets/
+

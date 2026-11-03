@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15272a">
+  <meta name="description" content="Una pequeña fuga en 3D. Sos un caracol en el piso 14. Tenés un fin de semana para volver a la libertad.">
+  <title>Turbo — A paso lento</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E🐌%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+  <main id="game" aria-label="Juego 3D A paso lento"><canvas id="scene" aria-label="Escenario del juego"></canvas></main>
+  <div class="grain" aria-hidden="true"></div>
+  <header id="brand"><span class="shell-logo">◎</span><span>TURBO<small>A PASO LENTO</small></span></header>
+
+  <section id="menu" class="screen">
+    <div class="menu-copy">
+      <p class="eyebrow"><span class="live-dot"></span> VIERNES · 18:08 · PISO 14</p>
+      <h1>Turbo.<br><em>Gran escape.</em></h1>
+      <p class="intro">Sos Turbo. Te dejaron en una planta, al borde de la ventana. La oficina quedó vacía. Catorce pisos más abajo, la libertad te espera.</p>
+      <form id="player-form">
+        <label for="player-name">TU NOMBRE DE JUGADOR</label>
+        <input id="player-name" name="player-name" maxlength="24" placeholder="¿Cómo te conocen en la ofi?" autocomplete="nickname" required>
+        <p id="player-status" role="status">El nombre queda reservado. Te reconocemos al volver desde este navegador.</p>
+        <button id="start" class="primary" type="submit">Reservar nombre y jugar <span>↗</span></button>
+      </form>
+      <div class="secondary-actions"><button id="other-player" hidden>Otro jugador</button><button id="help-open">Controles</button></div>
+    </div>
+    <section id="landing-ranking" aria-label="Ranking de la oficina">
+      <div class="ranking-title"><div><p class="eyebrow">¿QUIÉN LLEGÓ MÁS LEJOS?</p><h2>Ranking<br>de la ofi.</h2></div><span id="player-count">0<br><small>JUGADORES</small></span></div>
+      <p class="ranking-rule">Cada centímetro cuenta. Tu mejor avance queda guardado, aunque no llegues a escapar.</p>
+      <div class="ranking-head"><span>JUGADOR / HASTA DÓNDE LLEGÓ</span><span>PUNTOS</span></div>
+      <ol id="landing-list" class="standings"></ol>
+      <p id="landing-empty">La repisa está libre.<br>Reservá tu nombre y abrí camino.</p>
+      <p id="landing-status" role="status">Conectando con el ranking compartido…</p>
+      <div class="ranking-foot"><span>MAYOR AVANCE = MEJOR POSICIÓN</span><button id="refresh-ranking" aria-label="Actualizar ranking">Actualizar ↻</button></div>
+    </section>
+    <footer><span>WPP Production · La fuga del piso 14</span><span>Viernes · 18:08</span></footer>
+  </section>
+
+  <section id="hud" hidden aria-label="Estado del juego">
+    <div class="top-hud"><div class="location"><span class="eyebrow" id="zone-label">LA OFICINA</span><strong id="floor">14<span>/ PB</span></strong></div><div class="clock"><span class="eyebrow">TIEMPO PARA SER LIBRE</span><strong id="timer">48:00:00</strong><div class="time-track"><i id="time-fill"></i></div></div><button id="pause-btn" class="round" aria-label="Pausar">Ⅱ</button></div>
+    <div class="objective"><span id="chapter">01 / LA OFICINA</span><p id="objective">Bajá de la planta y encontrá las escaleras.</p><small id="distance">Seguí las luces verdes.</small><div id="live-score"></div><div id="access-card-status" hidden></div><div id="descent-status" hidden></div></div>
+    <div id="prompt" hidden><kbd>E</kbd><span>Entrar a las escaleras</span></div>
+    <div id="toast" role="status"></div>
+    <div id="hazard-warning" role="status" hidden></div><div id="stealth-warning" role="status" hidden></div>
+    <div class="bottom-hud"><div class="vitality"><span>VIDA <b id="health-value">100</b></span><div><i id="health-fill"></i></div></div><div class="stamina"><span>IMPULSO <kbd>SHIFT</kbd></span><div><i id="stamina-fill"></i></div></div><div class="key-hints"><span><kbd>W A S D</kbd> mover</span><span><kbd>ESPACIO</kbd> trepar</span><span><kbd>ARRASTRAR</kbd> cámara</span><span><kbd>ESC</kbd> pausa</span></div><div class="progress"><span id="progress-text">14 pisos por descubrir</span><div id="floor-dots"></div></div></div>
+    <nav id="touch-controls" aria-label="Controles táctiles"><div class="dpad"><button data-key="KeyW" aria-label="Avanzar">↑</button><button data-key="KeyA" aria-label="Izquierda">←</button><button data-key="KeyS" aria-label="Retroceder">↓</button><button data-key="KeyD" aria-label="Derecha">→</button></div><div><button data-key="ShiftLeft">Impulso</button><button data-key="Space">Trepar</button><button id="touch-use">Usar</button></div></nav>
+  </section>
+
+  <section id="cinema" hidden><div class="letterbox top"></div><div class="cinema-caption"><span id="cinema-kicker">VIERNES, 18:08</span><p id="cinema-line">Te trajeron al piso 14.</p></div><button id="skip">Saltar cinemática →</button><button id="cinema-home">← Salir al menú principal</button><div class="letterbox bottom"></div></section>
+  <section id="pause" class="modal-backdrop" hidden><div class="panel compact"><p class="eyebrow">TOMATE UN RESPIRO</p><h2>A tu ritmo.</h2><p>El reloj está detenido. La salida sigue ahí.</p><button id="resume" class="primary">Seguir explorando <span>→</span></button><button id="pause-help" class="text-button">Ver controles</button><button id="restart" class="text-button exit-menu">← Salir al menú principal</button><label class="setting"><span>Ambiente sonoro</span><input id="audio" type="checkbox"></label><label class="setting"><span>Calidad gráfica</span><select id="quality"><option value="high">Alta</option><option value="low">Ligera</option></select></label></div></section>
+  <section id="result" class="modal-backdrop" hidden><div class="panel compact"><p id="result-kicker" class="eyebrow">DESAFÍO COMPLETADO</p><h2 id="result-title">Pequeño caracol.<br>Gran escape.</h2><p id="result-copy">La ciudad nunca se sintió tan cerca.</p><p id="result-stat" class="result-stat"></p><p id="result-points"></p><p id="score-status" role="status"></p><button id="retry-save" class="text-button" hidden>Reintentar guardado</button><button id="again" class="primary">Volver a jugar <span>↗</span></button><button id="result-ranking" class="text-button exit-menu">← Salir al menú principal</button></div></section>
+  <dialog id="help"><button class="close" aria-label="Cerrar">×</button><p class="eyebrow">TU GUÍA DE BOLSILLO</p><h2>Sin prisa.<br>Pero sin pausa.</h2><div class="control-list"><span><kbd>W A S D / ↑ ← ↓ →</kbd> Moverte según la cámara</span><span><kbd>Arrastrar mouse</kbd> Girar la cámara · rueda para acercar</span><span><kbd>Espacio</kbd> Saltar / trepar obstáculos pequeños</span><span><kbd>Shift</kbd> Impulso mientras queda energía</span><span><kbd>E</kbd> Adherirte a vidrio, paredes y objetos / soltarte · puertas</span><span><kbd>Esc</kbd> Pausar y detener el reloj</span></div><p>Bajá de la hoja a la repisa blanca y rodeá la oficina por el bordecito hasta la rampa amarilla. Pasá por el pasillo 1 y después por el pasillo 2; al salir de la oficina seguís en el piso 14. Con E, Turbo puede adherirse al vidrio, paredes, escritorios, macetas y otros objetos cercanos. W/S suben y bajan; A/D van a los lados. Al alcanzar un borde, Turbo sube a la superficie. E otra vez lo suelta; desde mucha altura puede caer y terminar el intento. Trepar es ocho veces más lento que caminar. Seguí después hacia las escaleras. Si te caés, termina ese intento y queda registrado hasta dónde llegaste; podés empezar otro desde la planta. Las gotas de agua recuperan impulso y te regalan 20 minutos.</p><p class="note">48 horas de juego = 12 minutos reales. El reloj comienza después de la cinemática y se detiene al pausar o cambiar de pestaña. Usá un teclado en computadora o los botones táctiles.</p><button class="primary close-help">Entendido <span>→</span></button></dialog>
+  <section id="error" class="modal-backdrop" hidden><div class="panel"><h2>No pudimos abrir el mundo.</h2><p id="error-text"></p><button class="primary" onclick="location.reload()">Reintentar</button></div></section>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
+
+
+
