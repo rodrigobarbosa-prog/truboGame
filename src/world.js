@@ -23,8 +23,8 @@ function box(group, w,h,d,x,y,z, material=palette.white, shadow=true) {
 function ellipsoid(group, x,y,z, sx,sy,sz,material) {
   const m=new THREE.Mesh(new THREE.SphereGeometry(1,40,28),material);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;m.receiveShadow=true;m.userData.physical=true;group.add(m);return m;
 }
-function cylinder(group, r1,r2,h,x,y,z,material) {
-  const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,20),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;m.userData.physical=true;group.add(m);return m;
+function cylinder(group, r1,r2,h,x,y,z,material,openEnded=false) {
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,20,1,openEnded),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;m.userData.physical=true;group.add(m);return m;
 }
 function rod(group,a,b,r, material) {
   const direction=new THREE.Vector3().subVectors(b,a), m=cylinder(group,r,r,direction.length(),0,0,0,material);
@@ -117,44 +117,29 @@ function drop(zone,x,y,z){
   const ring=new THREE.Mesh(new THREE.TorusGeometry(.27,.012,8,32),palette.green);ring.rotation.x=Math.PI/2;ring.position.y=-.22;g.add(ring);zone.drops.push({mesh:g,x,y,z,taken:false});
 }
 function zone(){return {group:new THREE.Group(),surfaces:[],solids:[],drops:[],hazards:[]};}
-function coffee(area,x,z,y=0,rx=.65,rz=.5){
-  const g=new THREE.Group();g.position.set(x,y+.018,z);g.userData.nonPhysical=true;area.group.add(g);
-  const liquid=mat('#362015',{roughness:.18,metalness:.08,transparent:true,opacity:.93});
-  for(let i=0;i<5;i++){
-    const m=new THREE.Mesh(new THREE.CircleGeometry(1,28),liquid);
-    m.rotation.x=-Math.PI/2;m.scale.set(rx*(i? .55:1),rz*(i? .6:1),1);
-    m.position.set(i?Math.sin(i*2.4)*rx*.65:0,i*.001,i?Math.cos(i*2.4)*rz*.65:0);g.add(m);
-  }
-  const rim=new THREE.Mesh(new THREE.RingGeometry(.89,1,32),mat('#9a693d',{transparent:true,opacity:.6}));rim.rotation.x=-Math.PI/2;rim.scale.set(rx,rz,1);g.add(rim);
-  area.hazards.push({kind:'coffee',mesh:g,x,z,y,rx:rx*1.2,rz:rz*1.2});
+function spill(area,x,z,y,rx,rz){
+  const outline=[];for(let i=0;i<64;i++){const a=i/64*Math.PI*2,r=1+.12*Math.sin(a*3)+.065*Math.sin(a*7)+.035*Math.cos(a*11);outline.push({x:Math.cos(a)*rx*r,z:Math.sin(a)*rz*r});}
+  const contour=(path,scale=1)=>{outline.forEach((p,i)=>i?path.lineTo(p.x*scale,-p.z*scale):path.moveTo(p.x*scale,-p.z*scale));path.closePath();return path;};
+  const group=new THREE.Group();group.userData.nonPhysical=true;group.name='Café · superficie continua';group.position.set(x,y+.036,z);area.group.add(group);
+  const liquid=new THREE.Mesh(new THREE.ShapeGeometry(contour(new THREE.Shape())),mat('#3d2b23',{roughness:.3,metalness:.025}));liquid.rotation.x=-Math.PI/2;liquid.receiveShadow=true;group.add(liquid);
+  // A thin disjoint border instead of overlapping transparent discs. The
+  // opaque spill sits above the painted arrows, which disappear beneath it.
+  const border=contour(new THREE.Shape(),1.055);border.holes.push(contour(new THREE.Path()));
+  const edge=new THREE.Mesh(new THREE.ShapeGeometry(border),mat('#78583c',{roughness:.8}));edge.rotation.x=-Math.PI/2;group.add(edge);
+  area.hazards.push({kind:'coffee',mesh:group,x,z,y,rx:rx*1.2,rz:rz*1.2,outline});
 }
-function largeCoffeeStain(area,x,z){
-  const shape=new THREE.Shape(),outline=[];
-  for(let i=0;i<=80;i++){
-    const a=i/80*Math.PI*2,r=1+.12*Math.sin(a*3)+.065*Math.sin(a*7)+.035*Math.cos(a*11);
-    const px=Math.cos(a)*2.35*r,py=Math.sin(a)*3.15*r;
-    if(i===0)shape.moveTo(px,py);else shape.lineTo(px,py);
-    if(i<80)outline.push({x:px,z:-py});
-  }
-  const g=new THREE.Group();g.position.set(x,.019,z);area.group.add(g);
-  const geometry=new THREE.ShapeGeometry(shape);
-  const edge=new THREE.Mesh(geometry,mat('#986c42',{transparent:true,opacity:.63,roughness:.8}));edge.rotation.x=-Math.PI/2;edge.scale.setScalar(1.035);g.add(edge);
-  const liquid=new THREE.Mesh(geometry,mat('#3d261a',{transparent:true,opacity:.96,roughness:.2,metalness:.04}));liquid.rotation.x=-Math.PI/2;liquid.position.y=.003;liquid.receiveShadow=true;g.add(liquid);
-  for(const [px,pz,rx,rz] of [[.5,.3,.6,.28],[-.8,-.6,.32,.17]]){
-    const ring=new THREE.Mesh(new THREE.RingGeometry(.93,1,36),mat('#b18a59',{transparent:true,opacity:.25,roughness:.5}));ring.rotation.x=-Math.PI/2;ring.scale.set(rx,rz,1);ring.position.set(px,.005,pz);g.add(ring);
-  }
-  area.hazards.push({kind:'coffee',mesh:g,x,z,y:0,rx:2.8,rz:3.7,outline});
-}
-function carpetBugs(area,x,z,phase=0){
-  const g=new THREE.Group();g.position.set(x,.035,z);g.userData.nonPhysical=true;area.group.add(g);
-  const glow=mat('#a9f542',{emissive:'#78e72b',emissiveIntensity:1.6,roughness:.7});
+function coffee(area,x,z,y=0,rx=.65,rz=.5){spill(area,x,z,y,rx,rz);}
+function largeCoffeeStain(area,x,z){spill(area,x,z,0,2.35,3.15);}
+function carpetBugs(area,x,z,phase=0,y=0){
+  const colors=['#5f6257','#655e50','#515a50'];
   for(let i=0;i<4;i++){
-    const b=new THREE.Group();b.position.set(Math.sin(i*2.4)*.23,.045,Math.cos(i*2.4)*.18);g.add(b);
-    ellipsoid(b,0,0,0,.06,.045,.11,glow);
-    for(const side of [-1,1])for(const z of [-.06,0,.06])rod(b,new THREE.Vector3(side*.03,0,z),new THREE.Vector3(side*.11,-.04,z+.035),.009,palette.dark);
+    const px=x+Math.sin(i*2.4+phase)*.5,pz=z+Math.cos(i*2.4+phase)*.4,g=new THREE.Group();g.position.set(px,y+.03,pz);g.userData.nonPhysical=true;g.name='Bichito de alfombra · individual';area.group.add(g);
+    const body=mat(colors[i%colors.length],{roughness:1});
+    ellipsoid(g,0,.018,0,.031,.022,.054,body);ellipsoid(g,0,.018,-.057,.023,.018,.025,palette.dark);
+    for(const side of[-1,1])for(const zz of[-.035,0,.035])rod(g,new THREE.Vector3(side*.02,.015,zz),new THREE.Vector3(side*.073,-.015,zz+.018),.004,palette.dark);
+    const seed=(Math.abs(Math.round(px*73856093+pz*19349663+phase*83492791+i*971))>>>0)||1;
+    area.hazards.push({kind:'bugs',mesh:g,x:px,z:pz,y,spawnY:y,rx:.065,rz:.078,seed});
   }
-  const halo=new THREE.Mesh(new THREE.CircleGeometry(.46,28),new THREE.MeshBasicMaterial({color:'#96ef45',transparent:true,opacity:.16,depthWrite:false}));halo.rotation.x=-Math.PI/2;g.add(halo);
-  area.hazards.push({kind:'bugs',mesh:g,x,z,y:0,rx:.35,rz:.3,patrol:.65,phase});
 }
 function physicalColliders(area,bounds){
   area.group.updateMatrixWorld(true);
@@ -294,9 +279,12 @@ export function buildWorld(scene) {
   // Small terracotta pots rest on the sill, as in the new window photograph.
   const terracotta=surfaces.terracotta;
   for(const x of [10.7,3.3,-5.5]){
-    cylinder(office.group,.24,.18,.43,x,1.47,-11.12,terracotta);
-    cylinder(office.group,.255,.255,.055,x,1.675,-11.12,terracotta);
-    cylinder(office.group,.217,.217,.025,x,1.69,-11.12,palette.soil);
+    // Open pot and hollow rim: the old solid rim and soil had identical
+    // top planes at y=1.7025, producing flickering terracotta/soil patches.
+    cylinder(office.group,.24,.18,.43,x,1.47,-11.12,terracotta,true);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(.235,.02,10,32),terracotta);
+    rim.rotation.x=Math.PI/2;rim.position.set(x,1.685,-11.12);rim.castShadow=rim.receiveShadow=true;rim.userData.physical=true;office.group.add(rim);
+    cylinder(office.group,.21,.21,.02,x,1.665,-11.12,palette.soil);
     for(let i=0;i<5;i++){
       const end=new THREE.Vector3(x+Math.cos(i*2.4)*.22,1.84+(i%2)*.1,-11.12+Math.sin(i*2.4)*.2);
       rod(office.group,new THREE.Vector3(x,1.65,-11.12),end,.015,palette.leaf);
@@ -465,11 +453,13 @@ export function buildWorld(scene) {
   corridorFloor(floor14,-14,4.5,-6,-1.4,hallTile);
   box(floor14.group,18.5,.04,4.6,-4.75,.02,-3.7,hallTile);
   // Solid threshold joins the two room floors under the wooden doorway.
-  box(floor14.group,3.4,.16,.35,0,-.08,-6.125,hallTile);
-  floor14.surfaces.push({x1:-1.7,x2:1.7,z1:-6.3,z2:-5.95,y:0});
+  // Fill only the 10 cm gap. The old threshold overlapped the carpet at
+  // exactly y=0 and flashed between tile and carpet near the exit.
+  box(floor14.group,3.4,.16,.1,0,-.08,-6.05,hallTile);
+  floor14.surfaces.push({x1:-1.7,x2:1.7,z1:-6.1,z2:-6,y:0});
   for(const x of [-14.1,4.6])box(floor14.group,.18,3.5,4.8,x,1.75,-3.7,palette.white);
-  for(const [x1,x2] of [[-14,-1.7],[1.7,4.5]])box(floor14.group,x2-x1,3.5,.18,(x1+x2)/2,1.75,-6.1,palette.white);
-  box(floor14.group,3.4,.4,.18,0,3.3,-6.1,palette.white);
+  // The passage already supplies this shared doorway wall and header.
+  // Duplicating them here left coplanar end caps around the door opening.
   box(floor14.group,18.5,3.5,.18,-4.75,1.75,-1.3,palette.white);
   const hallWood=mat('#ffffff',{map:woodGrain,roughness:.38});
   box(floor14.group,6.6,2.9,.08,1.2,1.45,-1.43,hallWood);
@@ -654,3 +644,4 @@ export function createHand(scene) {
   };
   g.userData.pose(0);g.rotation.set(0,Math.PI,-.16);return g;
 }
+

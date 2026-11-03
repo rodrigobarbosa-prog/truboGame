@@ -1,5 +1,5 @@
 export const MAX_HEALTH=100;
-export const CONTACT_DAMAGE={spiders:25,glass:20};
+export const CONTACT_DAMAGE={spiders:50,glass:20,bugs:25};
 export function createHealth(){return{value:MAX_HEALTH,cooldown:0};}
 // A shared invulnerability interval prevents physics substeps from multiplying
 // damage, and stops crossing adjacent shards from draining an entire life.

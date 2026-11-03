@@ -103,7 +103,7 @@ Ubicación del conjunto señalado con flechas: el puesto exterior, la columna in
 
 Ajuste de la pared del fondo según la última foto: la columna del conjunto se ubica junto al ventanal trasero, con gráfica magenta, amarilla y gris, parlante beige arriba y perchero delante. El puesto exterior está a su derecha, también contra la línea de los ventanales, mirando hacia afuera. Se reemplaza la columna gris que estaba adelantada; la mesa corrida continúa hacia el interior. El inicio de Turbo y las orientaciones de las mesas restantes se conservan.
 
-Peligros del recorrido: tanto el café como los bichitos radiactivos terminan el intento tras 1 segundo de contacto. Alejarse reduce la exposición. El aviso indica el peligro y su porcentaje. Ambos motivos se registran junto al avance del intento. E busca una posición libre al soltar una superficie, conservando la altura y las reglas de caída.
+Peligros del recorrido: el café termina el intento tras 1 segundo de contacto. Los bichitos son individuales, pequeños, camuflados y quitan 25 de vida por contacto. Alejarse reduce la exposición. El aviso indica el peligro y su porcentaje. Ambos motivos se registran junto al avance del intento. E busca una posición libre al soltar una superficie, conservando la altura y las reglas de caída.
 
 
 Shift: velocidad extra reducida a la mitad; 1,8 m/s al caminar y 2,65 m/s con impulso. Al trepar, el multiplicador pasa de 1,6 a 1,3.
@@ -122,10 +122,14 @@ Las escaleras mantienen sus 336 peldaños y sus descansos continuos. Los pisos i
 
 Las misiones se reinician al comenzar un intento. Las caídas y los peligros mantienen las reglas existentes; el ranking sigue registrando hasta dónde llegó Turbo. La oficina y los pasillos 1 y 2 aprobados mantienen su distribución.
 
-El pisotón termina el intento con el motivo `caught`; ser detectado inicia la persecución. La cinemática, la ensalada y la patrulla se reinician con cada intento. Turbo tiene 100 de vida: las arañas quitan 25 por picadura y los vidrios 20 por corte, con un segundo entre golpes. Café y bichitos radiactivos conservan su límite de un segundo. Los motivos `spiders` y `glass` también se registran en el ranking.
+El pisotón termina el intento con el motivo `caught`; ser detectado inicia la persecución. La cinemática, la ensalada y la patrulla se reinician con cada intento. Turbo tiene 100 de vida: las arañas quitan 50 por picadura y los vidrios 20 por corte, con un segundo entre golpes. El café conserva su límite de un segundo; los bichitos quitan 25 de vida por contacto. Los motivos `spiders` y `glass` también se registran en el ranking.
 
 Render: antialiasing también en los buffers del posprocesado, oclusión ambiental más suave y sin grano animado. Las mesas conservan sus posiciones; su textura reduce el detalle que producía parpadeo en movimiento.
 
 
-Arañas colgantes: cinco arañas cubren el tramo de regreso de la repisa del piso 14, desde la esquina del ventanal hasta antes de la rampa. Cada una tiene un ciclo de 6,4 segundos desfasado respecto a las demás: pausa arriba, descenso, pausa de 1,5 segundos abajo y ascenso. El hilo no daña; el contacto con el cuerpo quita 25 de vida con el intervalo habitual entre golpes. Las marcas de la repisa avisan de la bajada y hay espacios seguros para esperar entre arañas.
+Arañas colgantes: cinco arañas cubren el tramo de regreso de la repisa del piso 14, desde la esquina del ventanal hasta antes de la rampa. Cada una tiene un ciclo de 6,4 segundos desfasado respecto a las demás: pausa arriba, descenso, pausa de 1,5 segundos abajo y ascenso. El hilo no daña; el contacto con el cuerpo quita 50 de vida con el intervalo habitual entre golpes. Las marcas de la repisa avisan de la bajada y hay espacios seguros para esperar entre arañas.
+
+
+
+Café: una silueta opaca continua y un borde separado, sin discos transparentes superpuestos. La mancha cubre las flechas del suelo. Insectos: cada uno elige su rumbo, velocidad y pausas por separado; evitan obstáculos y bordes y siguen los peldaños. Sin halo ni emisión verde. El intervalo compartido entre golpes se mantiene en un segundo.
 

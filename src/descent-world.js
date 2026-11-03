@@ -39,8 +39,7 @@ export function buildDescent(area,{box,cylinder,rod,sign,mat,palette,coffee,carp
     // Coffee at intermediate landings can be avoided along their edges.
     if([13,10,7,5,2].includes(floor))coffee(area,0,5,y-1.5,.55,.32);
     if([11,9,6,3,1].includes(floor)){
-      const z=1.3;carpetBugs(area,1.55,z,floor*.7);
-      const swarm=area.hazards.at(-1);swarm.y=flightHeight(floor,1,z);swarm.mesh.position.y=swarm.y+.035;swarm.patrol=.55;
+      const z=1.3;carpetBugs(area,1.55,z,floor*.7,flightHeight(floor,1,z));
     }
     if([13,9,5,1].includes(floor))drop(area,1.3,y+.35,-5.2);
     // Low cables can be jumped; the remaining width stays unobstructed.
@@ -77,6 +76,7 @@ export function buildDescent(area,{box,cylinder,rod,sign,mat,palette,coffee,carp
   sign(area.group,'8 · CERRÁ LA VÁLVULA',1.9,25.9,-6.07,2.1);
   gate(8,'valve');
   const pantry=buildPantry(area,{box,cylinder,rod,sign,mat,palette,sixSeatTable},()=>state);
+  for(const[x,z,phase]of[[9,-5.2,7.2],[27,4.8,8.3],[8,11.1,9.4]])carpetBugs(area,x,z,phase,21);
   buildStairHazards(area,{cylinder,rod,mat,palette});
   taskMeshes.salad=pantry.salad;
   sign(area.group,'7 · BUSCÁ LAS PROVISIONES',1.85,22.9,-6.07,2.1);

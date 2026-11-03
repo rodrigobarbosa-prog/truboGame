@@ -44,7 +44,7 @@ function init() {
   let fallStartY=null,attemptEnded=false,attemptId='';
   let climbing=false, ledgeStage=0, ledgeComplete=false,passageStage=0;
   let climbFace=null,climbCandidate=null,mantle=null;
-  let exposure={coffee:0,bugs:0},lastHazard=null,health=createHealth();
+  let exposure={coffee:0},lastHazard=null,health=createHealth();
   let officeDoorOpen=false,passageAnnounced=false;
   let hasAccessCard=false;
   let player=rememberedPlayer(),runActive=false,bestPoints=0,pointTime=0,savedPoints=-1,saveTimer=0,saving=false,rankingTimer=0,runId=0;
@@ -108,7 +108,7 @@ function init() {
     runId++;
     attemptId=globalThis.crypto?.randomUUID?.()||THREE.MathUtils.generateUUID();attemptEnded=false;fallStartY=null;
     remaining=TIME_LIMIT;elapsed=0;stamina=1;floor=14;velocityY=0;grounded=true;keys.clear();cinemaTime=0;interaction='';
-    exposure={coffee:0,bugs:0};lastHazard=null;health=createHealth();
+    exposure={coffee:0};lastHazard=null;health=createHealth();
     show('stealth-warning',false);
     $('skip').textContent='Saltar cinemática →';
     officeDoorOpen=false;passageAnnounced=false;world.setOfficeDoor(false);
@@ -202,7 +202,7 @@ function init() {
     if(reason==='coffee'||reason==='bugs'){
       $('result-kicker').textContent='PELIGRO · FIN DEL INTENTO';
       $('result-title').innerHTML=reason==='coffee'?'Demasiado café.<br>Hasta acá llegaste.':'La alfombra tenía vida.<br>Hasta acá llegaste.';
-      $('result-copy').textContent=reason==='coffee'?'Turbo permaneció demasiado tiempo en el café. Tu avance queda registrado. Podés volver a intentarlo desde la planta.':'Los bichitos radiactivos alcanzaron a Turbo. Tu avance queda registrado. Podés volver a intentarlo desde la planta.';
+      $('result-copy').textContent=reason==='coffee'?'Turbo permaneció demasiado tiempo en el café. Tu avance queda registrado. Podés volver a intentarlo desde la planta.':'Los bichitos de la alfombra agotaron la vida de Turbo. Tu avance queda registrado. Podés volver a intentarlo desde la planta.';
     }
     if(reason==='caught'){
       $('result-kicker').textContent='PISOTÓN · FIN DEL INTENTO';
@@ -251,12 +251,12 @@ function init() {
   }
   function updatePlayer(dt) {
     captureProgress();
-    const contact=hazardContact(zone.hazards,p,elapsed);
-    if(contact&&contact!==lastHazard)announce(contact==='coffee'?'¡Café! Salí del charco antes de 1 segundo.':contact==='bugs'?'¡Bichitos radiactivos! Tenés 1 segundo para alejarte.':contact==='spiders'?'¡Araña! Las picaduras quitan 25 de vida.':'¡Vidrios rotos! Cada corte quita 20 de vida.');
+    const contact=hazardContact(zone.hazards,p,elapsed,zone);
+    if(contact&&contact!==lastHazard)announce(contact==='coffee'?'¡Café! Salí del charco antes de 1 segundo.':contact==='bugs'?'¡Bichito de alfombra! Te quita 25 de vida.':contact==='spiders'?`¡Araña! Las picaduras quitan ${CONTACT_DAMAGE.spiders} de vida.`:'¡Vidrios rotos! Cada corte quita 20 de vida.');
     lastHazard=contact;
     const fatalHazard=exposureStep(exposure,contact,dt);
     $('hazard-warning').hidden=!contact;
-    if(contact)$('hazard-warning').textContent=CONTACT_DAMAGE[contact]?`${contact==='spiders'?'ARAÑA':'VIDRIOS ROTOS'} · VIDA ${health.value}/100 · ¡Alejate!`:`${contact==='coffee'?'CAFÉ CALIENTE':'RADIACIÓN'} · ${Math.round(exposure[contact]/EXPOSURE_LIMITS[contact]*100)}% · ¡Alejate!`;
+    if(contact)$('hazard-warning').textContent=CONTACT_DAMAGE[contact]?`${contact==='spiders'?'ARAÑA':contact==='bugs'?'BICHITO DE ALFOMBRA':'VIDRIOS ROTOS'} · VIDA ${health.value}/100 · ¡Alejate!`:`CAFÉ CALIENTE · ${Math.round(exposure[contact]/EXPOSURE_LIMITS[contact]*100)}% · ¡Alejate!`;
     if(fatalHazard){result(false,fatalHazard);return;}
     const damage=healthStep(health,contact,dt);
     if(damage.hit){$('health-fill').style.width=`${health.value}%`;$('health-value').textContent=health.value;}
@@ -546,3 +546,5 @@ function init() {
   // Read-only snapshot for manual QA; no teleport, time bypass or gameplay shortcuts.
   window.snailGame=Object.freeze({snapshot:()=>({mode,zone:zoneName,floor,remaining,stamina,grounded,attemptEnded,bestPoints,position:{x:p.x,y:p.y,z:p.z},interaction,render:renderer.info.render})});
 }
+
+

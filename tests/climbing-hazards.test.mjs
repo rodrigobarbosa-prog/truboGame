@@ -26,7 +26,8 @@ test('coffee is escapable; sustained contact ends the run, including across fram
   assert.equal(exposureStep(exposure,'coffee',.4),null);
   assert.equal(exposureStep(exposure,'coffee',.11),'coffee');
   assert.equal(exposureStep({coffee:0,bugs:0},'bugs',.99),null);
-  for(const kind of ['coffee','bugs'])assert.equal(exposureStep({coffee:0,bugs:0},kind,1),kind);
+  assert.equal(exposureStep({coffee:0},'coffee',1),'coffee');
+  assert.equal(exposureStep({coffee:0},'bugs',10),null);
 });
 test('hazards detect height and movement instead of harming a snail above them',()=>{
   const mesh={position:{x:0,z:0},rotation:{y:0}};
@@ -37,3 +38,4 @@ test('hazards detect height and movement instead of harming a snail above them',
   const bug={...coffee,kind:'bugs',patrol:.65,phase:0};
   hazardContact([bug],{x:10,y:0,z:10},2);assert.notEqual(mesh.position.x,0);
 });
+
