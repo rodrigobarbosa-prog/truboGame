@@ -1,5 +1,8 @@
 # Publicar Turbo en Cloudflare
 
+Enlace publicado: https://turbo-wpp.a-paso-lento.workers.dev
+
+
 El juego usa **Cloudflare Workers con Static Assets** y **D1** para guardar nombres reservados, mejores marcas e intentos. El enlace será abierto para cualquiera que lo tenga. No necesita que la computadora de la oficina permanezca encendida.
 
 ## Primera publicación desde GitHub
@@ -34,4 +37,5 @@ El servidor local (`node server.mjs`) sigue funcionando como antes. Su ranking y
 
 `npm test` comprueba el juego y la API del ranking. Las pruebas de Cloudflare usan SQLite en memoria (Node.js 24). `npx wrangler deploy --dry-run` verifica el paquete sin publicarlo.
 
-La edición pública conserva el sistema de puntaje del prototipo: el navegador informa su avance. No debe utilizarse como clasificación verificada para premios o competiciones con dinero.
+
+

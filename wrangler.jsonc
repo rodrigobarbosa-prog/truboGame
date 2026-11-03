@@ -12,7 +12,7 @@
   "d1_databases": [{
     "binding": "DB",
     "database_name": "turbo-ranking",
-    "database_id": "00000000-0000-0000-0000-000000000000",
+    "database_id": "ac74b33c-df8c-4d72-8aee-f857f1363988",
     "migrations_dir": "migrations"
   }]
 }
