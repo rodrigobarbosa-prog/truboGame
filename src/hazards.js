@@ -1,3 +1,5 @@
+import {animateHangingSpider} from './hanging-spiders.js';
+import {hangingSpiderTouchesHeight} from './spider-timing.js';
 export const EXPOSURE_LIMITS={coffee:1,bugs:1};
 
 export function insideSpill(x,z,outline,radius=.16){
@@ -14,7 +16,8 @@ export function insideSpill(x,z,outline,radius=.16){
 export function hazardContact(hazards,p,time){
   let contact=null;
   for(const hazard of hazards){
-    if(hazard.kind==='spiders'){
+    if(hazard.motion==='hanging')animateHangingSpider(hazard,time);
+    if(hazard.kind==='spiders'&&hazard.motion!=='hanging'){
       hazard.mesh.position.x=hazard.x+Math.sin(time*1.3+hazard.phase)*hazard.patrol;
       hazard.mesh.rotation.y=Math.sin(time*1.3+hazard.phase)>0?Math.PI/2:-Math.PI/2;
     }
@@ -26,7 +29,7 @@ export function hazardContact(hazards,p,time){
     }
     const x=hazard.mesh.position.x,z=hazard.mesh.position.z;
     if(hazard.maxZ!==undefined&&p.z>hazard.maxZ)continue;
-    if(Math.abs(p.y-hazard.y)>.3)continue;
+    if(hazard.motion==='hanging'?!hangingSpiderTouchesHeight(p,hazard.mesh.position.y):Math.abs(p.y-hazard.y)>.3)continue;
     const touching=hazard.outline?insideSpill(p.x-x,p.z-z,hazard.outline):hazard.shape==='rect'?Math.abs(p.x-x)<hazard.rx+.16&&Math.abs(p.z-z)<hazard.rz+.16:((p.x-x)/(hazard.rx+.16))**2+((p.z-z)/(hazard.rz+.16))**2<1;
     if(touching)contact=hazard.kind;
   }

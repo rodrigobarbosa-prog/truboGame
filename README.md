@@ -126,3 +126,6 @@ El pisotón termina el intento con el motivo `caught`; ser detectado inicia la p
 
 Render: antialiasing también en los buffers del posprocesado, oclusión ambiental más suave y sin grano animado. Las mesas conservan sus posiciones; su textura reduce el detalle que producía parpadeo en movimiento.
 
+
+Arañas colgantes: cinco arañas cubren el tramo de regreso de la repisa del piso 14, desde la esquina del ventanal hasta antes de la rampa. Cada una tiene un ciclo de 6,4 segundos desfasado respecto a las demás: pausa arriba, descenso, pausa de 1,5 segundos abajo y ascenso. El hilo no daña; el contacto con el cuerpo quita 25 de vida con el intervalo habitual entre golpes. Las marcas de la repisa avisan de la bajada y hay espacios seguros para esperar entre arañas.
+

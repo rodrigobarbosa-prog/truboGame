@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { START, WINDOW, LEDGE_HEIGHT, ledgeSurfaces, stairSurfaces } from './rules.js';
 import { materials, leafMesh } from './materials.js';
 import {buildDescent} from './descent-world.js';
+import {addHangingSpiders} from './hanging-spiders.js';
 
 const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness:0.8, ...extra });
 const palette = {
@@ -353,6 +354,7 @@ export function buildWorld(scene) {
   coffee(office,-8,8.65,0,.7,.55);coffee(office,4.7,9.05,0,.8,.5);
   carpetBugs(office,-3.1,8.4,.4);carpetBugs(office,8,8.75,2.1);
   coffee(office,-.5,9.25,0,.65,.4);coffee(office,-8.8,-10.65,LEDGE_HEIGHT,.5,.3);
+  addHangingSpiders(office,{rod,mat});
   carpetBugs(office,-6,8.9,3);carpetBugs(office,11,8.3,4);
   const bulletin=sign(office.group,'wpp production',-13.88,2,4,3,'#e8d0a3','#39484b');bulletin.rotation.y=Math.PI/2;
 

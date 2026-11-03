@@ -244,6 +244,7 @@ function init() {
     $('zone-label').textContent=labels[0];$('chapter').textContent=labels[1];$('objective').textContent=labels[2];
     if(zoneName==='stairs')$('objective').textContent=world.descent.objective();
     $('distance').textContent=climbing?'Turbo adherido · W/S trepar · A/D lateral · E soltarte':area==='office'?(ledgeStage>=2?'Pasillo 1 → pasillo 2 · piso 14':'Seguí la repisa hasta la rampa amarilla'):area==='passage2'?'Oficina continua · vuelta por los escritorios · piso 14':area==='floor14'?'Corredor común del edificio · piso 14':area==='stairs'?`${floor} pisos hasta la calle · Cuidado con las caídas`:`${Math.max(0,Math.round(9-p.z))} m hasta el aire libre`;
+    if(area==='office'&&!climbing&&p.x<-11.9&&p.z>-11&&p.z<5.5&&p.y>1)$('distance').textContent='Arañas colgantes · frená y pasá cuando suban';
     $('progress-text').textContent=floor===0?'La libertad está cerca':`${floor} ${floor===1?'piso por descubrir':'pisos por descubrir'}`;
     $('live-score').textContent=`${player?.player.name||''} · ${pointsText(bestPoints)} puntos · ${progressLabel(bestPoints)}`;
     [...$('floor-dots').children].forEach((dot,i)=>dot.classList.toggle('done',i<14-floor));
